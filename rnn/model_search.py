@@ -69,7 +69,7 @@ class RNNModelSearch(RNNModel):
 
     def _loss(self, hidden, input, target):
       log_prob, hidden_next = self(input, hidden, return_h=False)
-      loss = nn.functional.nll_loss(log_prob.view(-1, log_prob.size(2)), target)
+      loss = nn.functional.nll_loss(log_prob, target)
       return loss, hidden_next
 
     def genotype(self):
