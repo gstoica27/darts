@@ -21,9 +21,9 @@ from utils import batchify, get_batch, repackage_hidden, create_exp_dir, save_ch
 
 cwd = "/Volumes/External HDD/"
 parser = argparse.ArgumentParser(description='PyTorch PennTreeBank/WikiText2 Language Model')
-parser.add_argument('--data', type=str, default=os.path.join(cwd, 'dataset/tacred/data/json'),
+parser.add_argument('--data', type=str, default='/home/scratch/gis/datasets/tacred/data/json',
                     help='location of the data corpus')
-parser.add_argument('--vocab_dir', type=str, default=os.path.join(cwd, 'dataset/tacred/data/vocab'))
+parser.add_argument('--vocab_dir', type=str, default='/home/scratch/gis/datasets/vocab/vocab.pkl')
 parser.add_argument('--emsize', type=int, default=300,
                     help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=300,
@@ -88,6 +88,7 @@ parser.add_argument('--pos_dim', type=int, default=30, help='POS embedding dimen
 parser.add_argument('--lower', dest='lower', action='store_true', help='Lowercase all words.')
 parser.add_argument('--no-lower', dest='lower', action='store_false')
 parser.add_argument('--pe_dim', type=int, default=30, help='Position encoding dimension.')
+parser.add_argument('token_emb_path', type=str, default='/home/scratch/gis/datasets/vocab/embedding.npy')
 args = parser.parse_args()
 
 if args.nhidlast < 0:
@@ -151,7 +152,8 @@ if args.continue_train:
     model = torch.load(os.path.join(args.save, 'model.pt'))
 else:
     model = model.RNNModelSearch(ntokens, args.emsize, args.nhid, args.nhidlast, 
-                       args.dropout, args.dropouth, args.dropoutx, args.dropouti, args.dropoute)
+                       args.dropout, args.dropouth, args.dropoutx, args.dropouti, args.dropoute,
+                                 args.nner, args.npos, args.token_emb_path)
 
 size = 0
 for p in model.parameters():
