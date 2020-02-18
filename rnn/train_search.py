@@ -58,7 +58,7 @@ parser.add_argument('--cuda', action='store_false',
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=50, metavar='N',
                     help='report interval')
-parser.add_argument('--save', type=str,  default='EXP',
+parser.add_argument('--save', type=str,  default='/home/scratch/gis/datasets/EXP',
                     help='path to save the final model')
 parser.add_argument('--alpha', type=float, default=0,
                     help='alpha L2 regularization on RNN activation (alpha = 0 means no regularization)')

@@ -8,7 +8,7 @@ from torch.autograd import Variable
 def repackage_hidden(h):
     #print(type(h))
     if type(h) == Variable: 
-        print(h.shape)
+        #print(h.shape)
         return Variable(h.data)
     else:
         return tuple(repackage_hidden(v) for v in h)
