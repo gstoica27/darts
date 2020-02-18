@@ -42,7 +42,6 @@ class DARTSCell(nn.Module):
       h_mask = mask2d(B, hidden.size(2), keep_prob=1.-self.dropouth)
     else:
       x_mask = h_mask = None
-    print('Inside DARTCell forward. hidden shape: {}'.format(hidden.shape))
     hidden = hidden[0]
     hiddens = []
     for t in range(T):

@@ -224,8 +224,7 @@ def train(train_data, dev_data):
         # hidden = [model.init_hidden(args.small_batch_size) for _ in range(args.batch_size // args.small_batch_size)]
         # hidden_valid = [model.init_hidden(args.small_batch_size) for _ in
         #                 range(args.batch_size // args.small_batch_size)]
-        hidden = model.init_hidden(len(train_batch['relation']))[0]
-        hidden_valid = model.init_hidden(len(train_batch['relation']))[0]
+
         
         print('hidden shape: {} | hidden valid: {} |'.format(hidden.shape, hidden_valid.shape))
         # while i < train_data.size(0) - 1 - 1:
@@ -251,6 +250,17 @@ def train(train_data, dev_data):
 
         cur_data_valid = dev_batch
         cur_targets_valid = dev_batch['relation']
+
+        hidden = model.init_hidden(len(train_batch['relation']))[0]
+        hidden_valid = model.init_hidden(len(dev_batch['relation']))[0]
+        print('Train Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden.shape, cur_data['tokens'].shape))
+        print('Dev Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden_valid.shape, cur_data_valid['tokens'].shape))
+        assert hidden.shape[1] == cur_data['tokens'].shape[0], 'Hidden shape: {} | tokens shape: {}'.format(
+            hidden.shape, cur_data['tokens'].shape
+        )
+        assert hidden_valid.shape[1] == cur_data_valid['tokens'].shape[0], 'Hidden shape: {} | tokens shape: {}'.format(
+            hidden_valid.shape, cur_data_valid['tokens'].shape
+        )
 
         # while start < args.batch_size:
         #     cur_data, cur_targets = data[:, start: end], targets[:, start: end].contiguous().view(-1)
