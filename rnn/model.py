@@ -42,7 +42,7 @@ class DARTSCell(nn.Module):
       h_mask = mask2d(B, hidden.size(2), keep_prob=1.-self.dropouth)
     else:
       x_mask = h_mask = None
-
+    print('Inside DARTCell forward. hidden shape: {}'.format(hidden.shape))
     hidden = hidden[0]
     hiddens = []
     for t in range(T):
@@ -53,7 +53,7 @@ class DARTSCell(nn.Module):
 
   def _compute_init_state(self, x, h_prev, x_mask, h_mask):
     if self.training:
-      #print(x.shape)
+      #print('inside compute init state. x shape: {} | hidden shape: {}'.format(x.shape, h_prev.shape))
       xh_prev = torch.cat([x * x_mask, h_prev * h_mask], dim=-1)
     else:
       xh_prev = torch.cat([x, h_prev], dim=-1)
@@ -177,6 +177,8 @@ class RNNModel(nn.Module):
 
         # emb = embedded_dropout(self.encoder, tokens, dropout=self.dropoute if self.training else 0)
         # collect all input types
+
+        print('Inside the RNNModel. | hidden shape: {}'.format(hidden.shape))
         emb = self.encoder(tokens)
         input_types = [emb]
         if self.nner is not None:

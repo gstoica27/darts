@@ -224,8 +224,10 @@ def train(train_data, dev_data):
         # hidden = [model.init_hidden(args.small_batch_size) for _ in range(args.batch_size // args.small_batch_size)]
         # hidden_valid = [model.init_hidden(args.small_batch_size) for _ in
         #                 range(args.batch_size // args.small_batch_size)]
-        hidden = model.init_hidden(args.batch_size)[0]
-        hidden_valid = model.init_hidden(args.batch_size)[0]
+        hidden = model.init_hidden(len(train_batch['relation']))[0]
+        hidden_valid = model.init_hidden(len(train_batch['relation']))[0]
+        
+        print('hidden shape: {} | hidden valid: {} |'.format(hidden.shape, hidden_valid.shape))
         # while i < train_data.size(0) - 1 - 1:
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths
