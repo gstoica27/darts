@@ -52,6 +52,7 @@ class Architect(object):
     return hidden, None
 
   def _backward_step(self, hidden, input, target):
+    print(hidden.shape)
     loss, hidden_next = self.model._loss(hidden, input, target)
     loss.backward()
     return hidden_next
@@ -59,6 +60,7 @@ class Architect(object):
   def _backward_step_unrolled(self,
           hidden_train, input_train, target_train,
           hidden_valid, input_valid, target_valid, eta):
+    print(hidden_train.shape, hidden_valid.shape)
     unrolled_model, clip_coef = self._compute_unrolled_model(hidden_train, input_train, target_train, eta)
     unrolled_loss, hidden_next = unrolled_model._loss(hidden_valid, input_valid, target_valid)
 

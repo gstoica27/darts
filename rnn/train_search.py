@@ -21,9 +21,9 @@ from utils import batchify, get_batch, repackage_hidden, create_exp_dir, save_ch
 
 cwd = "/Volumes/External HDD/"
 parser = argparse.ArgumentParser(description='PyTorch PennTreeBank/WikiText2 Language Model')
-parser.add_argument('--data', type=str, default='/home/scratch/gis/datasets/tacred/data/json',
+parser.add_argument('--data_dir', type=str, default='/home/scratch/gis/datasets/tacred/data/json',
                     help='location of the data corpus')
-parser.add_argument('--vocab_dir', type=str, default='/home/scratch/gis/datasets/vocab/vocab.pkl')
+parser.add_argument('--vocab_dir', type=str, default='/home/scratch/gis/datasets/vocab')
 parser.add_argument('--emsize', type=int, default=300,
                     help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=300,
@@ -88,7 +88,7 @@ parser.add_argument('--pos_dim', type=int, default=30, help='POS embedding dimen
 parser.add_argument('--lower', dest='lower', action='store_true', help='Lowercase all words.')
 parser.add_argument('--no-lower', dest='lower', action='store_false')
 parser.add_argument('--pe_dim', type=int, default=30, help='Position encoding dimension.')
-parser.add_argument('token_emb_path', type=str, default='/home/scratch/gis/datasets/vocab/embedding.npy')
+parser.add_argument('--token_emb_path', type=str, default='/home/scratch/gis/datasets/vocab/embedding.npy')
 args = parser.parse_args()
 
 if args.nhidlast < 0:
@@ -131,7 +131,7 @@ opt['vocab_size'] = vocab.size
 emb_file = opt['vocab_dir'] + '/embedding.npy'
 emb_matrix = np.load(emb_file)
 assert emb_matrix.shape[0] == vocab.size
-assert emb_matrix.shape[1] == opt['emb_dim']
+assert emb_matrix.shape[1] == opt['emsize']
 
 
 # corpus = data.Corpus(args.data)
@@ -153,7 +153,7 @@ if args.continue_train:
 else:
     model = model.RNNModelSearch(ntokens, args.emsize, args.nhid, args.nhidlast, 
                        args.dropout, args.dropouth, args.dropoutx, args.dropouti, args.dropoute,
-                                 args.nner, args.npos, args.token_emb_path)
+                                 args.ner_dim, args.pos_dim, args.token_emb_path, len(constant.LABEL_TO_ID))
 
 size = 0
 for p in model.parameters():
@@ -224,8 +224,8 @@ def train(train_data, dev_data):
         # hidden = [model.init_hidden(args.small_batch_size) for _ in range(args.batch_size // args.small_batch_size)]
         # hidden_valid = [model.init_hidden(args.small_batch_size) for _ in
         #                 range(args.batch_size // args.small_batch_size)]
-        hidden = model.init_hidden(args.batch_size)
-        hidden_valid = model.init_hidden(args.batch_size)
+        hidden = model.init_hidden(args.batch_size)[0]
+        hidden_valid = model.init_hidden(args.batch_size)[0]
         # while i < train_data.size(0) - 1 - 1:
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths
@@ -258,8 +258,9 @@ def train(train_data, dev_data):
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
         # hidden[s_id] = repackage_hidden(hidden[s_id])
         # hidden_valid[s_id] = repackage_hidden(hidden_valid[s_id])
-        hidden = repackage_hidden(hidden)
-        hidden_valid = repackage_hidden(hidden_valid)
+        print(hidden.shape)
+        #hidden = repackage_hidden(hidden)
+        #hidden_valid = repackage_hidden(hidden_valid)
 
         # hidden_valid[s_id], grad_norm = architect.step(
         #         hidden[s_id], cur_data, cur_targets,

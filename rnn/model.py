@@ -8,7 +8,7 @@ from utils import LockedDropout
 from utils import embedded_dropout
 from torch.autograd import Variable
 import numpy as np
-from .tacred_utils import constant
+from tacred_utils import constant
 
 INITRANGE = 0.04
 
@@ -38,6 +38,7 @@ class DARTSCell(nn.Module):
 
     if self.training:
       x_mask = mask2d(B, inputs.size(2), keep_prob=1.-self.dropoutx)
+      print(hidden.shape)
       h_mask = mask2d(B, hidden.size(2), keep_prob=1.-self.dropouth)
     else:
       x_mask = h_mask = None
@@ -52,6 +53,7 @@ class DARTSCell(nn.Module):
 
   def _compute_init_state(self, x, h_prev, x_mask, h_mask):
     if self.training:
+      print(x.shape)
       xh_prev = torch.cat([x * x_mask, h_prev * h_mask], dim=-1)
     else:
       xh_prev = torch.cat([x, h_prev], dim=-1)
@@ -119,7 +121,7 @@ class RNNModel(nn.Module):
 
         self.lockdrop = LockedDropout()
         self.encoder = nn.Embedding(ntoken, ninp, padding_idx=constant.PAD_ID)
-        self.peripheral_emb_dim = 0.
+        self.peripheral_emb_dim = 0
         if self.nner is not None:
             self.ner_encoder = nn.Embedding(len(constant.NER_TO_ID), self.nner,
                                              padding_idx=constant.PAD_ID)
@@ -131,7 +133,7 @@ class RNNModel(nn.Module):
         # If using additional token attributes, need to encode them using smaller size
         if self.peripheral_emb_dim > 0:
             input_dim = self.ninp + self.peripheral_emb_dim
-            self.input_aggregator = nn.Linear(input_dim, self.ninp)
+            self.input_aggregator = nn.Linear(in_features=input_dim, out_features=self.ninp)
 
         assert ninp == nhid == nhidlast
         if cell_cls == DARTSCell:
@@ -194,12 +196,14 @@ class RNNModel(nn.Module):
         outputs = []
 
         # [B, T] --> [T, B]
-        masks = torch.from_numpy(np.array(masks)).t()
+        #masks = torch.from_numpy(np.array(masks)).t()
+        masks = masks.t()
+        #print(masks.shape)
         # [T, B] --> [T, B, 1]
         masks = masks.unsqueeze(2)
         for l, rnn in enumerate(self.rnns):
             # [T, B, E], [B, E]
-            raw_output, new_h = rnn(raw_output, hidden[l])
+            raw_output, new_h = rnn(raw_output, hidden)#[l])
             # mask out padded entries
             raw_output = raw_output * masks
             new_hidden.append(new_h)

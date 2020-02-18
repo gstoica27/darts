@@ -115,9 +115,10 @@ class DataLoader(object):
         if key < 0 or key >= len(self.data):
             raise IndexError
         batch = self.data[key]
+        #print(batch.keys())
         batch_size = len(batch['tokens'])
-        batch = list(zip(*batch))
-        assert len(batch) == 7
+        #batch = list(zip(*batch))
+        #assert len(batch) == 7
 
         # sort all fields by lens for easy RNN operations
         # lens = [len(x) for x in batch[0]]
@@ -130,16 +131,16 @@ class DataLoader(object):
             words = batch[0]
 
         # convert to tensors
-        batch['tokens'] = get_long_tensor(batch['tokens'], batch_size)
-        batch['masks'] = torch.eq(batch['tokens'], 0)
-        batch['pos'] = get_long_tensor(batch['pos'], batch_size)
-        batch['ner'] = get_long_tensor(batch['ner'], batch_size)
-        batch['deprel'] = get_long_tensor(batch['deprel'], batch_size)
-        batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size)
-        batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size)
+        batch['tokens'] = get_long_tensor(batch['tokens'], batch_size).cuda()
+        batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
+        batch['pos'] = get_long_tensor(batch['pos'], batch_size).cuda()
+        batch['ner'] = get_long_tensor(batch['ner'], batch_size).cuda()
+        batch['deprel'] = get_long_tensor(batch['deprel'], batch_size).cuda()
+        batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size).cuda()
+        batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size).cuda()
 
-        batch['relation'] = torch.LongTensor(batch['relation'])
-        batch['orig_idx'] = list(range(batch_size))
+        batch['relation'] = torch.LongTensor(batch['relation']).cuda()
+        batch['orig_idx'] = list(range(batch_size))#.cuda()
 
         return batch
 
