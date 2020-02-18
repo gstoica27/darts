@@ -38,7 +38,7 @@ class DARTSCell(nn.Module):
 
     if self.training:
       x_mask = mask2d(B, inputs.size(2), keep_prob=1.-self.dropoutx)
-      print(hidden.shape)
+      #print(hidden.shape)
       h_mask = mask2d(B, hidden.size(2), keep_prob=1.-self.dropouth)
     else:
       x_mask = h_mask = None
@@ -53,7 +53,7 @@ class DARTSCell(nn.Module):
 
   def _compute_init_state(self, x, h_prev, x_mask, h_mask):
     if self.training:
-      print(x.shape)
+      #print(x.shape)
       xh_prev = torch.cat([x * x_mask, h_prev * h_mask], dim=-1)
     else:
       xh_prev = torch.cat([x, h_prev], dim=-1)
@@ -172,8 +172,8 @@ class RNNModel(nn.Module):
         masks = input['masks']
         pos = input['pos']
         ner = input['ner']
-
-        batch_size = tokens.size(1)
+        #print('tokens shape: {} | pos: {} | ner: {}'.format(tokens.shape, pos.shape, ner.shape))
+        batch_size = tokens.size(0)
 
         # emb = embedded_dropout(self.encoder, tokens, dropout=self.dropoute if self.training else 0)
         # collect all input types
@@ -189,12 +189,12 @@ class RNNModel(nn.Module):
         # Reduce inputs to expected size
         emb = self.input_aggregator(combined_input)
         emb = self.lockdrop(emb, self.dropouti)
-
+        emb = torch.transpose(emb, 1, 0)
         raw_output = emb
         new_hidden = []
         raw_outputs = []
         outputs = []
-
+        #print('aggregated emb shape: {}'.format(emb.shape))
         # [B, T] --> [T, B]
         #masks = torch.from_numpy(np.array(masks)).t()
         masks = masks.t()

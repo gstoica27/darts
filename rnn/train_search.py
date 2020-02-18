@@ -189,7 +189,7 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
         hidden = model.init_hidden(batch_size)
         # data, targets = get_batch(data_source, i, args, evaluation=True)
         data = batch
-        targets = batch['relations']
+        targets = batch['relation']
         targets = targets.view(-1)
 
         log_prob, hidden = parallel_model(data, hidden)
@@ -245,10 +245,10 @@ def train(train_data, dev_data):
 
         # start, end, s_id = 0, args.small_batch_size, 0
         cur_data = train_batch
-        cur_targets = train_batch['relations']
+        cur_targets = train_batch['relation']
 
         cur_data_valid = dev_batch
-        cur_targets_valid = dev_batch['relations']
+        cur_targets_valid = dev_batch['relation']
 
         # while start < args.batch_size:
         #     cur_data, cur_targets = data[:, start: end], targets[:, start: end].contiguous().view(-1)
@@ -258,7 +258,7 @@ def train(train_data, dev_data):
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
         # hidden[s_id] = repackage_hidden(hidden[s_id])
         # hidden_valid[s_id] = repackage_hidden(hidden_valid[s_id])
-        print(hidden.shape)
+        #print(hidden.shape)
         #hidden = repackage_hidden(hidden)
         #hidden_valid = repackage_hidden(hidden_valid)
 
@@ -276,7 +276,7 @@ def train(train_data, dev_data):
         # assuming small_batch_size = batch_size so we don't accumulate gradients
         optimizer.zero_grad()
         # hidden[s_id] = repackage_hidden(hidden[s_id])
-        hidden = repackage_hidden(hidden)
+        #hidden = repackage_hidden(hidden)
 
         # log_prob, hidden[s_id], rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden[s_id], return_h=True)
         log_prob, hidden, rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden, return_h=True)
@@ -334,8 +334,8 @@ else:
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.wdecay)
 
 train_data = DataLoader(args.data_dir + '/train.json', args.batch_size, opt, vocab, evaluation=False)
-dev_data = DataLoader(args.data_dir + '/dev.json', eval_batch_size, opt, vocab, evaluation=True)
-test_data = DataLoader(args.data_dir + '/test.json', test_batch_size, opt, vocab, evaluation=True)
+dev_data = DataLoader(args.data_dir + '/dev.json', args.batch_size, opt, vocab, evaluation=True)
+test_data = DataLoader(args.data_dir + '/test.json', args.batch_size, opt, vocab, evaluation=True)
 
 for epoch in range(1, args.epochs+1):
     epoch_start_time = time.time()

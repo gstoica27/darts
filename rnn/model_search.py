@@ -69,6 +69,8 @@ class RNNModelSearch(RNNModel):
 
     def _loss(self, hidden, input, target):
       log_prob, hidden_next = self(input, hidden, return_h=False)
+      #print('log_prob len: {} | elem shape: {}'.format(log_prob.shape, log_prob[0].shape))
+      #print('target shape: {}'.format(target.shape))
       loss = nn.functional.nll_loss(log_prob, target)
       return loss, hidden_next
 
