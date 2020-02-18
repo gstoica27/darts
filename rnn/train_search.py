@@ -58,7 +58,7 @@ parser.add_argument('--cuda', action='store_false',
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=50, metavar='N',
                     help='report interval')
-parser.add_argument('--save', type=str,  default='/home/scratch/gis/datasets/EXP',
+parser.add_argument('--save', type=str,  default='EXP',
                     help='path to save the final model')
 parser.add_argument('--alpha', type=float, default=0,
                     help='alpha L2 regularization on RNN activation (alpha = 0 means no regularization)')
@@ -97,7 +97,7 @@ if args.small_batch_size < 0:
     args.small_batch_size = args.batch_size
 
 if not args.continue_train:
-    args.save = 'search-{}-{}'.format(args.save, time.strftime("%Y%m%d-%H%M%S"))
+    args.save = '/home/scratch/gis/datasets/search-{}-{}'.format(args.save, time.strftime("%Y%m%d-%H%M%S"))
     create_exp_dir(args.save, scripts_to_save=glob.glob('*.py'))
 
 log_format = '%(asctime)s %(message)s'
@@ -304,10 +304,14 @@ def train(train_data, dev_data):
 
         # total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
-        if batch % args.log_interval == 0 and batch > 0:
+        if batch % args.log_interval == 0: # and batch > 0:
             logging.info(parallel_model.genotype())
             print(F.softmax(parallel_model.weights, dim=-1))
-            cur_loss = total_loss[0] / args.log_interval
+            #print('total loss: {}'.format(type(total_loss)))
+            #print('total loss: {}'.format(total_loss))
+            #print('total loss: {}'.format(total_loss.shape))
+            #cur_loss = total_loss[0] / args.log_interval
+            cur_loss = total_loss / args.log_interval
             elapsed = time.time() - start_time
             logging.info('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
