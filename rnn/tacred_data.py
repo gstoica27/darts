@@ -113,6 +113,8 @@ class DataLoader(object):
 
     def next_batch(self):
         # continuously loop through dataset
+        if self.batch_index > len(self.data):
+            exit()
         key = self.batch_index % len(self.data)
         print('Key is: {}'.format(key))
         batch = copy.deepcopy(self.data[key])
