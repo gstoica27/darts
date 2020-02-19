@@ -177,7 +177,7 @@ class RNNModel(nn.Module):
         # emb = embedded_dropout(self.encoder, tokens, dropout=self.dropoute if self.training else 0)
         # collect all input types
 
-        print('Inside the RNNModel. | hidden shape: {}'.format(hidden.shape))
+        #print('Inside the RNNModel. | hidden shape: {}'.format(hidden.shape))
         emb = self.encoder(tokens)
         input_types = [emb]
         if self.nner is not None:
