@@ -23,8 +23,8 @@ def score(key, prediction, verbose=False):
     gold_by_relation    = Counter()
 
     # Loop over the data to compute a score
-    for row in range(len(key)):
-        print('row is: {}'.format(row))
+    for i, row in enumerate(range(len(key))):
+        print('row is: {} | len keys: {} | i: {}'.format(row, len(key), i))
         gold = key[row]
         guess = prediction[row]
          
