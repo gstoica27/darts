@@ -344,6 +344,7 @@ def train(train_data, dev_data):
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
+        print('on to next batch...')
         # batch += 1
         # i += seq_len
     print('Reached end of epoch training!')

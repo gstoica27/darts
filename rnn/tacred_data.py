@@ -113,9 +113,12 @@ class DataLoader(object):
     def next_batch(self):
         # continuously loop through dataset
         key = self.batch_index % len(self.data)
+        print('Key is: {}'.format(key))
         batch = self.data[key]
+        print('extracted batch...')
         # print(batch.keys())
         batch_size = len(batch['tokens'])
+        print('got batch size...')
         # batch = list(zip(*batch))
         # assert len(batch) == 7
 
@@ -128,17 +131,24 @@ class DataLoader(object):
             words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch['tokens']]
         else:
             words = batch['tokens']
-
+        print('computing all features...')
         # convert to tensors
         batch['tokens'] = get_long_tensor(words, batch_size).cuda()
+        print('computed tokens')
         batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
+        print('obtained masks...')
         batch['pos'] = get_long_tensor(batch['pos'], batch_size).cuda()
+        print('obtained pos...')
         batch['ner'] = get_long_tensor(batch['ner'], batch_size).cuda()
+        print('obtained ner...')
         batch['deprel'] = get_long_tensor(batch['deprel'], batch_size).cuda()
+        print('obtained deprel...')
         batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size).cuda()
+        print('obtained subj_positions...')
         batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size).cuda()
-
+        print('obtained obj_positions...')
         batch['relation'] = torch.LongTensor(batch['relation']).cuda()
+        print('obtained relations...')
         batch['orig_idx'] = list(range(batch_size))  # .cuda()
         self.batch_index += 1
         return batch
