@@ -179,6 +179,7 @@ logging.info('Model total parameters: {}'.format(total_params))
 id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
 
 def evaluate(data_source, batch_size=10, data_name='dev'):
+    data_source = DataLoader(args.data_dir + '/dev.json', batch_size, opt, vocab, evaluation=True)
     print('Evaluating Model!')
     # Turn on evaluation mode which disables dropout.
     model.eval()
