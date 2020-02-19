@@ -21,6 +21,7 @@ class DataLoader(object):
         self.opt = opt
         self.vocab = vocab
         self.eval = evaluation
+        self.batch_index = 0
 
         with open(filename) as infile:
             data = json.load(infile)
@@ -108,12 +109,49 @@ class DataLoader(object):
         # return 50
         return len(self.data)
 
+    def next_batch(self):
+        # continuously loop through dataset
+        key = self.batch_index % len(self.data)
+        batch = self.data[key]
+        # print(batch.keys())
+        batch_size = len(batch['tokens'])
+        # batch = list(zip(*batch))
+        # assert len(batch) == 7
+
+        # sort all fields by lens for easy RNN operations
+        # lens = [len(x) for x in batch[0]]
+        # batch, orig_idx = sort_all(batch, lens)
+
+        # word dropout
+        if not self.eval:
+            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
+        else:
+            words = batch[0]
+
+        # convert to tensors
+        batch['tokens'] = get_long_tensor(words, batch_size).cuda()
+        batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
+        batch['pos'] = get_long_tensor(batch['pos'], batch_size).cuda()
+        batch['ner'] = get_long_tensor(batch['ner'], batch_size).cuda()
+        batch['deprel'] = get_long_tensor(batch['deprel'], batch_size).cuda()
+        batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size).cuda()
+        batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size).cuda()
+
+        batch['relation'] = torch.LongTensor(batch['relation']).cuda()
+        batch['orig_idx'] = list(range(batch_size))  # .cuda()
+        self.batch_index += 1
+        return batch
+
     def __getitem__(self, key):
         """ Get a batch with index. """
         if not isinstance(key, int):
             raise TypeError
-        if key < 0 or key >= len(self.data):
+        if key < 0:
             raise IndexError
+        if key >= len(self.data):
+            key = key % len(self.data)
+        # if key < 0 or key >= len(self.data):
+        #     raise IndexError
         batch = self.data[key]
         #print(batch.keys())
         batch_size = len(batch['tokens'])
