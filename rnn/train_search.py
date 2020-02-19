@@ -179,6 +179,7 @@ logging.info('Model total parameters: {}'.format(total_params))
 id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
 
 def evaluate(data_source, batch_size=10, data_name='dev'):
+    print('Evaluating Model!')
     # Turn on evaluation mode which disables dropout.
     model.eval()
     total_loss = 0
@@ -186,7 +187,9 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
     # ntokens = len(vocab.word2id)
     # for i in range(0, data_source.size(0) - 1, args.bptt):
     predictions = []
-    for i, batch in enumerate(data_source):
+    for i in range(len(data_source)):
+        batch = data_source.next_batch()
+        batch_size = len(batch)
         hidden = model.init_hidden(batch_size)
         # data, targets = get_batch(data_source, i, args, evaluation=True)
         data = batch
@@ -337,6 +340,7 @@ def train(train_data, dev_data):
             start_time = time.time()
         # batch += 1
         # i += seq_len
+    print('Reached end of epoch training!')
 
 # Loop over epochs.
 lr = args.lr
