@@ -36,9 +36,10 @@ class DataLoader(object):
         self.labels = [id2label[d['relation']] for d in data]
         self.num_examples = len(data)
         # TODO: DELETE THIS
-        self.artificial_prop = .02
+        # self.artificial_prop = .02
         # chunk into batches
-        data = [data[i:i + batch_size] for i in range(0, int(len(data) * self.artificial_prop), batch_size)]
+        # * self.artificial_prop
+        data = [data[i:i + batch_size] for i in range(0, int(len(data)), batch_size)]
 
         data = self.batch_pad_data(data)
 
@@ -105,7 +106,7 @@ class DataLoader(object):
 
     def gold(self):
         """ Return gold labels as a list. """
-        return self.labels[: int(len(self.labels) * self.artificial_prop)]
+        return self.labels #[: int(len(self.labels) * self.artificial_prop)]
 
     def __len__(self):
         # return 50

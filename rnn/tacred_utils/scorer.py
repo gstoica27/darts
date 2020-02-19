@@ -24,9 +24,9 @@ def score(key, prediction, verbose=False):
 
     # Loop over the data to compute a score
     for i, row in enumerate(range(len(key))):
-        print('row is: {} | len keys: {} | i: {}'.format(row, len(key), i))
+        # print('row is: {} | len keys: {} | i: {}'.format(row, len(key), i))
         gold = key[row]
-        print('prediction len: {}'.format(len(prediction)))
+        # print('prediction len: {}'.format(len(prediction)))
         guess = prediction[row]
          
         if gold == NO_RELATION and guess == NO_RELATION:
