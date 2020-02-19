@@ -226,7 +226,7 @@ def train(train_data, dev_data):
         #                 range(args.batch_size // args.small_batch_size)]
 
         
-        print('hidden shape: {} | hidden valid: {} |'.format(hidden.shape, hidden_valid.shape))
+        #print('hidden shape: {} | hidden valid: {} |'.format(hidden.shape, hidden_valid.shape))
         # while i < train_data.size(0) - 1 - 1:
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths
