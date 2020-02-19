@@ -133,19 +133,19 @@ class DataLoader(object):
             words = batch['tokens']
         print('computing all features...')
         # convert to tensors
-        batch['tokens'] = get_long_tensor(words, batch_size).cuda()
+        batch['tokens'] = get_long_tensor(words, batch_size, name='tokens').cuda()
         print('computed tokens')
         batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
         print('obtained masks...')
-        batch['pos'] = get_long_tensor(batch['pos'], batch_size).cuda()
+        batch['pos'] = get_long_tensor(batch['pos'], batch_size, name='pos').cuda()
         print('obtained pos...')
-        batch['ner'] = get_long_tensor(batch['ner'], batch_size).cuda()
+        batch['ner'] = get_long_tensor(batch['ner'], batch_size, name='ner').cuda()
         print('obtained ner...')
-        batch['deprel'] = get_long_tensor(batch['deprel'], batch_size).cuda()
+        batch['deprel'] = get_long_tensor(batch['deprel'], batch_size, name='deprel').cuda()
         print('obtained deprel...')
-        batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size).cuda()
+        batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size, name='subj_positions').cuda()
         print('obtained subj_positions...')
-        batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size).cuda()
+        batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size, name='obj_positions').cuda()
         print('obtained obj_positions...')
         batch['relation'] = torch.LongTensor(batch['relation']).cuda()
         print('obtained relations...')
@@ -209,10 +209,13 @@ def get_positions(start_idx, end_idx, length):
            list(range(1, length - end_idx))
 
 
-def get_long_tensor(tokens_list, batch_size):
+def get_long_tensor(tokens_list, batch_size, name):
     """ Convert list of list of tokens to a padded LongTensor. """
+    print('Computing long tensor for: {}'.format(name))
+    print('token size: {} | batch size: {}'.format(len(tokens_list), batch_size))
     token_len = max(len(x) for x in tokens_list)
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
+    print('created token tensor')
     for i, s in enumerate(tokens_list):
         tokens[i, :len(s)] = torch.LongTensor(s)
     return tokens
