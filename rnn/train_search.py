@@ -189,7 +189,7 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
     predictions = []
     for i in range(len(data_source)):
         batch = data_source.next_batch()
-        batch_size = len(batch)
+        batch_size = len(batch['relation'])
         hidden = model.init_hidden(batch_size)[0]
         # data, targets = get_batch(data_source, i, args, evaluation=True)
         data = batch
