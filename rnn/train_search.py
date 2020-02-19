@@ -201,7 +201,7 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
 
         total_loss += loss * len(data)
 
-        batch_predictions = torch.argmax(log_prob, dim=-1).cpu()
+        batch_predictions = torch.argmax(log_prob, dim=-1).cpu().data.numpy()
         batch_predictions = [id2label[prediction] for prediction in batch_predictions]
         predictions += batch_predictions
 
