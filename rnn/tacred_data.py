@@ -219,6 +219,7 @@ def get_long_tensor(tokens_list, batch_size, name):
     print('created long tensor')
     print('tensor first: {}'.format(tokens))
     for i, s in enumerate(tokens_list):
+        print('putting stuff in index: {}| stuff: {}'.format(i, s))
         tokens[i, :len(s)] = torch.LongTensor(s)
     print('added all elements in tensor...')
     print('Tensor: {}'.format(tokens))
