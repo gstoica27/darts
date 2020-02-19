@@ -291,15 +291,19 @@ def train(train_data, dev_data):
             hidden_valid, cur_data_valid, cur_targets_valid,
             optimizer,
             args.unrolled)
-
+        print('Finished architect step...')
         # assuming small_batch_size = batch_size so we don't accumulate gradients
         optimizer.zero_grad()
         # hidden[s_id] = repackage_hidden(hidden[s_id])
         #hidden = repackage_hidden(hidden)
 
         # log_prob, hidden[s_id], rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden[s_id], return_h=True)
+        print('Entering model training...')
+        hidden = torch.autograd.Variable(hidden.data)
         log_prob, hidden, rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden, return_h=True)
+        print('received predictions')
         raw_loss = nn.functional.nll_loss(log_prob, cur_targets)
+        print('received loss' )
 
         loss = raw_loss
         # Activiation Regularization
@@ -314,13 +318,15 @@ def train(train_data, dev_data):
         # s_id += 1
         # start = end
         # end = start + args.small_batch_size
-
+        print('backpropogated...')
         gc.collect()
+        print('garbage collected...')
 
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+        print('clipped gradients...')
         optimizer.step()
-
+        print('updated gradients...')
         # total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
         if batch % args.log_interval == 0: # and batch > 0:
