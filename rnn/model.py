@@ -167,7 +167,7 @@ class RNNModel(nn.Module):
             self.input_aggregator.weight.data.uniform_(-INITRANGE, INITRANGE)
 
     def forward(self, input, hidden, return_h=False):
-        print('Inside DART model forward...')
+        # print('Inside DART model forward...')
         tokens = input['tokens']
         masks = input['masks']
         pos = input['pos']
