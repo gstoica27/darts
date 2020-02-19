@@ -7,6 +7,7 @@ import random
 import torch
 import numpy as np
 from collections import defaultdict
+import copy
 
 from tacred_utils import constant, helper, vocab
 
@@ -114,7 +115,7 @@ class DataLoader(object):
         # continuously loop through dataset
         key = self.batch_index % len(self.data)
         print('Key is: {}'.format(key))
-        batch = self.data[key]
+        batch = copy.deepcopy(self.data[key])
         print('extracted batch...')
         # print(batch.keys())
         batch_size = len(batch['tokens'])
