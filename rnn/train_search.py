@@ -89,6 +89,7 @@ parser.add_argument('--lower', dest='lower', action='store_true', help='Lowercas
 parser.add_argument('--no-lower', dest='lower', action='store_false')
 parser.add_argument('--pe_dim', type=int, default=30, help='Position encoding dimension.')
 parser.add_argument('--token_emb_path', type=str, default='/home/scratch/gis/datasets/vocab/embedding.npy')
+parser.add_argument('--word_dropout', type=float, default=0.04, help='The rate at which randomly set a word to UNK.')
 args = parser.parse_args()
 
 if args.nhidlast < 0:
