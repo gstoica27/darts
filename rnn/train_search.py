@@ -212,7 +212,8 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
     logging.info('{} set | Precision: {} | Recall: {} | F1: {}'.format(
         data_name, precision, recall, f1
     ))
-    return total_loss[0] / len(data_source)
+    print('total loss: {}'.format(total_loss))
+    return total_loss / len(data_source)
 
 
 def train(train_data, dev_data):
