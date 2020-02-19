@@ -24,6 +24,7 @@ def score(key, prediction, verbose=False):
 
     # Loop over the data to compute a score
     for row in range(len(key)):
+        print('row is: {}'.format(row))
         gold = key[row]
         guess = prediction[row]
          
