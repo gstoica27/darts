@@ -195,7 +195,7 @@ def evaluate(data_source, batch_size=10, data_name='dev'):
         data = batch
         targets = batch['relation']
         targets = targets.view(-1)
-
+        print('tokens: {} | hidden: {}'.format(batch['tokens'].shape, hidden.shape))
         log_prob, hidden = parallel_model(data, hidden)
         loss = nn.functional.nll_loss(log_prob, targets).data  # log_prob.view(-1, log_prob.size(2))
 
