@@ -219,7 +219,10 @@ def get_long_tensor(tokens_list, batch_size, name):
     for i, s in enumerate(tokens_list):
         tokens[i, :len(s)] = torch.LongTensor(s)
     print('added all elements in tensor...')
-    print('tensor is in cuda: {}'.format(tokens.is_cuda))
+    try:
+        print('tensor is in cuda: {}'.format(tokens.is_cuda))
+    except:
+        raise ValueError('Tensor: {}'.format(tokens))
     return tokens
 
 
