@@ -68,13 +68,13 @@ class RNNModelSearch(RNNModel):
       return self._arch_parameters
 
     def _loss(self, hidden, input, target):
-      print('Extracting log probabilities...')
+      # print('Extracting log probabilities...')
       log_prob, hidden_next = self(input, hidden, return_h=False)
       #print('log_prob len: {} | elem shape: {}'.format(log_prob.shape, log_prob[0].shape))
       #print('target shape: {}'.format(target.shape))
-      print('computing loss...')
+      # print('computing loss...')
       loss = nn.functional.nll_loss(log_prob, target)
-      print('returning loss')
+      # print('returning loss')
       return loss, hidden_next
 
     def genotype(self):

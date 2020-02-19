@@ -260,8 +260,8 @@ def train(train_data, dev_data):
 
         hidden = model.init_hidden(len(train_batch['relation']))[0]
         hidden_valid = model.init_hidden(len(dev_batch['relation']))[0]
-        print('Train Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden.shape, cur_data['tokens'].shape))
-        print('Dev Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden_valid.shape, cur_data_valid['tokens'].shape))
+        # print('Train Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden.shape, cur_data['tokens'].shape))
+        # print('Dev Batch Shapes: | Hidden: {} | Tokens: {} |'.format(hidden_valid.shape, cur_data_valid['tokens'].shape))
         assert hidden.shape[1] == cur_data['tokens'].shape[0], 'Hidden shape: {} | tokens shape: {}'.format(
             hidden.shape, cur_data['tokens'].shape
         )
@@ -291,19 +291,19 @@ def train(train_data, dev_data):
             hidden_valid, cur_data_valid, cur_targets_valid,
             optimizer,
             args.unrolled)
-        print('Finished architect step...')
+        # print('Finished architect step...')
         # assuming small_batch_size = batch_size so we don't accumulate gradients
         optimizer.zero_grad()
         # hidden[s_id] = repackage_hidden(hidden[s_id])
         #hidden = repackage_hidden(hidden)
 
         # log_prob, hidden[s_id], rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden[s_id], return_h=True)
-        print('Entering model training...')
+        # print('Entering model training...')
         hidden = torch.autograd.Variable(hidden.data)
         log_prob, hidden, rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden, return_h=True)
-        print('received predictions')
+        # print('received predictions')
         raw_loss = nn.functional.nll_loss(log_prob, cur_targets)
-        print('received loss' )
+        # print('received loss' )
 
         loss = raw_loss
         # Activiation Regularization
@@ -318,15 +318,15 @@ def train(train_data, dev_data):
         # s_id += 1
         # start = end
         # end = start + args.small_batch_size
-        print('backpropogated...')
+        # print('backpropogated...')
         gc.collect()
-        print('garbage collected...')
+        # print('garbage collected...')
 
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
-        print('clipped gradients...')
+        # print('clipped gradients...')
         optimizer.step()
-        print('updated gradients...')
+        # print('updated gradients...')
         # total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
         if batch % args.log_interval == 0: # and batch > 0:
@@ -344,7 +344,7 @@ def train(train_data, dev_data):
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
-        print('on to next batch...')
+        # print('on to next batch...')
         # batch += 1
         # i += seq_len
     print('Reached end of epoch training!')

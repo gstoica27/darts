@@ -113,16 +113,16 @@ class DataLoader(object):
 
     def next_batch(self):
         # continuously loop through dataset
-        if self.batch_index > len(self.data):
-            print('key is: {}'.format(self.batch_index))
-            exit()
+        # if self.batch_index > len(self.data):
+        #     print('key is: {}'.format(self.batch_index))
+        #     exit()
         key = self.batch_index % len(self.data)
-        print('Key is: {}'.format(key))
+        # print('Key is: {}'.format(key))
         batch = copy.deepcopy(self.data[key])
-        print('extracted batch...')
+        # print('extracted batch...')
         # print(batch.keys())
         batch_size = len(batch['tokens'])
-        print('got batch size...')
+        # print('got batch size...')
         # batch = list(zip(*batch))
         # assert len(batch) == 7
 
@@ -135,24 +135,24 @@ class DataLoader(object):
             words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch['tokens']]
         else:
             words = batch['tokens']
-        print('computing all features...')
+        # print('computing all features...')
         # convert to tensors
         batch['tokens'] = get_long_tensor(words, batch_size, name='tokens').cuda()
-        print('computed tokens')
+        # print('computed tokens')
         batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
-        print('obtained masks...')
+        # print('obtained masks...')
         batch['pos'] = get_long_tensor(batch['pos'], batch_size, name='pos').cuda()
-        print('obtained pos...')
+        # print('obtained pos...')
         batch['ner'] = get_long_tensor(batch['ner'], batch_size, name='ner').cuda()
-        print('obtained ner...')
+        # print('obtained ner...')
         batch['deprel'] = get_long_tensor(batch['deprel'], batch_size, name='deprel').cuda()
-        print('obtained deprel...')
+        # print('obtained deprel...')
         batch['subj_positions'] = get_long_tensor(batch['subj_positions'], batch_size, name='subj_positions').cuda()
-        print('obtained subj_positions...')
+        # print('obtained subj_positions...')
         batch['obj_positions'] = get_long_tensor(batch['obj_positions'], batch_size, name='obj_positions').cuda()
-        print('obtained obj_positions...')
+        # print('obtained obj_positions...')
         batch['relation'] = torch.LongTensor(batch['relation']).cuda()
-        print('obtained relations...')
+        # print('obtained relations...')
         batch['orig_idx'] = list(range(batch_size))  # .cuda()
         self.batch_index += 1
         return batch
@@ -215,18 +215,18 @@ def get_positions(start_idx, end_idx, length):
 
 def get_long_tensor(tokens_list, batch_size, name):
     """ Convert list of list of tokens to a padded LongTensor. """
-    print('Computing long tensor for: {}'.format(name))
-    print('token size: {} | batch size: {}'.format(len(tokens_list), batch_size))
+    # print('Computing long tensor for: {}'.format(name))
+    # print('token size: {} | batch size: {}'.format(len(tokens_list), batch_size))
     token_len = max(len(x) for x in tokens_list)
-    print('tensor len: {}'.format(token_len))
+    # print('tensor len: {}'.format(token_len))
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
-    print('created long tensor')
-    print('tensor first: {}'.format(tokens))
+    # print('created long tensor')
+    # print('tensor first: {}'.format(tokens))
     for i, s in enumerate(tokens_list):
-        print('putting stuff in index: {}| stuff: {}'.format(i, s))
+        # print('putting stuff in index: {}| stuff: {}'.format(i, s))
         tokens[i, :len(s)] = torch.LongTensor(s)
-    print('added all elements in tensor...')
-    print('Tensor: {}'.format(tokens))
+    # print('added all elements in tensor...')
+    # print('Tensor: {}'.format(tokens))
     return tokens
 
 

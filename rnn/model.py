@@ -188,12 +188,12 @@ class RNNModel(nn.Module):
             pos_emb = self.npos_encoder(pos)
             input_types.append(pos_emb)
         combined_input = torch.cat(input_types, dim=2)
-        print('combined tokens...')
+        # print('combined tokens...')
         # Reduce inputs to expected size
         emb = self.input_aggregator(combined_input)
         emb = self.lockdrop(emb, self.dropouti)
         emb = torch.transpose(emb, 1, 0)
-        print('created and reduced input embeddings')
+        # print('created and reduced input embeddings')
         raw_output = emb
         new_hidden = []
         raw_outputs = []
@@ -205,7 +205,7 @@ class RNNModel(nn.Module):
         #print(masks.shape)
         # [T, B] --> [T, B, 1]
         masks = masks.unsqueeze(2)
-        print('going through rnn...')
+        # print('going through rnn...')
         for l, rnn in enumerate(self.rnns):
             # [T, B, E], [B, E]
             raw_output, new_h = rnn(raw_output, hidden)#[l])
@@ -214,7 +214,7 @@ class RNNModel(nn.Module):
             new_hidden.append(new_h)
             raw_outputs.append(raw_output)
         hidden = new_hidden
-        print('passed through rnn...')
+        # print('passed through rnn...')
         output = self.lockdrop(raw_output, self.dropout)
         # [T, B, E] -> [B, E]
         output = torch.mean(output, dim=0)
@@ -226,7 +226,7 @@ class RNNModel(nn.Module):
         log_prob = nn.functional.log_softmax(logit, dim=-1)
         model_output = log_prob
         model_output = model_output.view(batch_size, self.nclasses)
-        print('computed all logits and output stuff')
+        # print('computed all logits and output stuff')
         if return_h:
             return model_output, hidden, raw_outputs, outputs
         return model_output, hidden
