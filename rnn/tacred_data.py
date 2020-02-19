@@ -105,7 +105,7 @@ class DataLoader(object):
 
     def gold(self):
         """ Return gold labels as a list. """
-        return self.labels
+        return self.labels[: int(len(self.labels) * self.artificial_prop)]
 
     def __len__(self):
         # return 50
