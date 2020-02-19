@@ -220,7 +220,7 @@ def train(train_data, dev_data):
     # ntokens = len(corpus.dictionary)
 
     # batch, i = 0, 0
-    for batch in len(train_data):
+    for batch in range(len(train_data)):
         train_batch = train_data.next_batch()
         dev_batch = dev_data.next_batch()
         # for batch, (train_batch, dev_batch) in enumerate(zip(train_data, dev_data)):
