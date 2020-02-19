@@ -35,9 +35,9 @@ class DataLoader(object):
         self.labels = [id2label[d['relation']] for d in data]
         self.num_examples = len(data)
         # TODO: DELETE THIS
-        artificial_prop = .1
+        self.artificial_prop = .05
         # chunk into batches
-        data = [data[i:i + batch_size] for i in range(0, int(len(data) * artificial_prop), batch_size)]
+        data = [data[i:i + batch_size] for i in range(0, int(len(data) * self.artificial_prop), batch_size)]
 
         data = self.batch_pad_data(data)
 
@@ -108,7 +108,7 @@ class DataLoader(object):
 
     def __len__(self):
         # return 50
-        return len(self.data)
+        return int(len(self.data) * self.artificial_prop)
 
     def next_batch(self):
         # continuously loop through dataset
