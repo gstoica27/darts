@@ -108,11 +108,11 @@ class DataLoader(object):
 
     def __len__(self):
         # return 50
-        return int(len(self.data) * self.artificial_prop)
+        return len(self.data)
 
     def next_batch(self):
         # continuously loop through dataset
-        key = self.batch_index % int(len(self.data) * self.artificial_prop)
+        key = self.batch_index % len(self.data)
         batch = self.data[key]
         # print(batch.keys())
         batch_size = len(batch['tokens'])
