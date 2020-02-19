@@ -214,8 +214,10 @@ def get_long_tensor(tokens_list, batch_size, name):
     print('Computing long tensor for: {}'.format(name))
     print('token size: {} | batch size: {}'.format(len(tokens_list), batch_size))
     token_len = max(len(x) for x in tokens_list)
+    print('tensor len: {}'.format(token_len))
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
     print('created long tensor')
+    print('tensor first: {}'.format(tokens))
     for i, s in enumerate(tokens_list):
         tokens[i, :len(s)] = torch.LongTensor(s)
     print('added all elements in tensor...')
