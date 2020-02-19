@@ -124,9 +124,9 @@ class DataLoader(object):
 
         # word dropout
         if not self.eval:
-            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
+            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch['tokens']]
         else:
-            words = batch[0]
+            words = batch['tokens']
 
         # convert to tensors
         batch['tokens'] = get_long_tensor(words, batch_size).cuda()
