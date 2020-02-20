@@ -140,7 +140,7 @@ class DataLoader(object):
         # convert to tensors
         batch['tokens'] = get_long_tensor(words, batch_size, name='tokens').cuda()
         # print('computed tokens')
-        batch['masks'] = torch.eq(batch['tokens'], 0).cuda()
+        batch['masks'] = torch.logical_not(torch.eq(batch['tokens'], 0)).cuda()
         # print('obtained masks...')
         batch['pos'] = get_long_tensor(batch['pos'], batch_size, name='pos').cuda()
         # print('obtained pos...')
