@@ -222,6 +222,7 @@ def train(train_data, dev_data):
     ntokens = len(vocab.word2id)
     # Turn on training mode which enables dropout.
     total_loss = 0
+    total_valid_loss = 0
     start_time = time.time()
     # ntokens = len(corpus.dictionary)
 
@@ -288,11 +289,12 @@ def train(train_data, dev_data):
         #         hidden_valid[s_id], cur_data_valid, cur_targets_valid,
         #         optimizer,
         #         args.unrolled)
-        hidden_valid, grad_norm = architect.step(
+        hidden_valid, valid_loss = architect.step(
             hidden, cur_data, cur_targets,
             hidden_valid, cur_data_valid, cur_targets_valid,
             optimizer,
             args.unrolled)
+        total_valid_loss += valid_loss.data
         # print('Finished architect step...')
         # assuming small_batch_size = batch_size so we don't accumulate gradients
         optimizer.zero_grad()
@@ -302,6 +304,8 @@ def train(train_data, dev_data):
         # log_prob, hidden[s_id], rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden[s_id], return_h=True)
         # print('Entering model training...')
         hidden = torch.autograd.Variable(hidden.data)
+        # Hidden should be all zeros
+        print('hidden all zeros?: (not {})'.format(torch.sum(hidden)))
         log_prob, hidden, rnn_hs, dropped_rnn_hs = parallel_model(cur_data, hidden, return_h=True)
         # print('received predictions')
         raw_loss = nn.functional.nll_loss(log_prob, cur_targets)
@@ -339,11 +343,14 @@ def train(train_data, dev_data):
             #print('total loss: {}'.format(total_loss.shape))
             #cur_loss = total_loss[0] / args.log_interval
             cur_loss = total_loss / args.log_interval
+            cur_valid_loss = total_valid_loss / args.log_interval
             elapsed = time.time() - start_time
             logging.info('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
-                    'loss {:5.2f} | ppl {:8.2f}'.format(
+                    'loss {:5.2f} | ppl {:8.2f} | valid loss: {:5.2f} | valid ppl: {:5.2f}'.format(
                 epoch, batch, len(train_data), optimizer.param_groups[0]['lr'],
-                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
+                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss),
+                cur_valid_loss, math.exp(cur_valid_loss)
+            ))
             total_loss = 0
             start_time = time.time()
         # print('on to next batch...')

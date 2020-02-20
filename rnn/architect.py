@@ -46,17 +46,17 @@ class Architect(object):
     self.optimizer.zero_grad()
     if unrolled:
         # print('Inside architect step unroll...')
-        hidden = self._backward_step_unrolled(hidden_train, input_train, target_train, hidden_valid, input_valid, target_valid, eta)
+        hidden, valid_loss = self._backward_step_unrolled(hidden_train, input_train, target_train, hidden_valid, input_valid, target_valid, eta)
     else:
-        hidden = self._backward_step(hidden_valid, input_valid, target_valid)
+        hidden, valid_loss = self._backward_step(hidden_valid, input_valid, target_valid)
     self.optimizer.step()
-    return hidden, None
+    return hidden, valid_loss
 
   def _backward_step(self, hidden, input, target):
     #print(hidden.shape)
     loss, hidden_next = self.model._loss(hidden, input, target)
     loss.backward()
-    return hidden_next
+    return hidden_next, loss
 
   def _backward_step_unrolled(self,
           hidden_train, input_train, target_train,
@@ -82,7 +82,7 @@ class Architect(object):
         v.grad = Variable(g.data)
       else:
         v.grad.data.copy_(g.data)
-    return hidden_next
+    return hidden_next, unrolled_loss
 
   def _construct_model_from_theta(self, theta):
     model_new = self.model.new()
