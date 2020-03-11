@@ -154,7 +154,8 @@ if args.continue_train:
 else:
     model = model.RNNModelSearch(ntokens, args.emsize, args.nhid, args.nhidlast, 
                        args.dropout, args.dropouth, args.dropoutx, args.dropouti, args.dropoute,
-                                 args.ner_dim, args.pos_dim, args.token_emb_path, len(constant.LABEL_TO_ID))
+                                 args.ner_dim, args.pos_dim, args.token_emb_path, len(constant.LABEL_TO_ID),
+                                 args.pe_dim)
 
 size = 0
 for p in model.parameters():

@@ -35,7 +35,7 @@ if __name__ == '__main__':
   if len(sys.argv) != 2:
     print("usage:\n python {} ARCH_NAME".format(sys.argv[0]))
     sys.exit(1)
-
+  print(sys.argv)
   genotype_name = sys.argv[1]
   try:
     genotype = eval('genotypes.{}'.format(genotype_name))

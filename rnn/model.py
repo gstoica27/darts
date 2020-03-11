@@ -101,12 +101,13 @@ class RNNModel(nn.Module):
     def __init__(self, ntoken, ninp, nhid, nhidlast,
                  dropout=0.5, dropouth=0.5, dropoutx=0.5, dropouti=0.5,
                  dropoute=0.1, nner=None, npos=None, token_emb_path=None,
-                 nclasses=None, cell_cls=DARTSCell, genotype=None):
+                 nclasses=None, nloc=None, cell_cls=DARTSCell, genotype=None):
         super(RNNModel, self).__init__()
         # TACRED attributes
         self.nner = nner
         self.npos = npos
         self.nhid = nhid
+        self.nloc = nloc
         self.token_emb_path = token_emb_path
         self.nclasses = nclasses
         # Original attributes
@@ -129,6 +130,9 @@ class RNNModel(nn.Module):
             self.npos_encoder = nn.Embedding(len(constant.POS_TO_ID), self.npos,
                                              padding_idx=constant.PAD_ID)
             self.peripheral_emb_dim += self.npos
+        if self.nloc is not None:
+            self.nloc_encoder = nn.Embedding(constant.MAX_LEN * 2 + 1, self.nloc)
+            self.peripheral_emb_dim += self.nloc + self.nloc
         # If using additional token attributes, need to encode them using smaller size
         if self.peripheral_emb_dim > 0:
             input_dim = self.ninp + self.peripheral_emb_dim
@@ -165,6 +169,8 @@ class RNNModel(nn.Module):
             self.ner_encoder.weight.data[1:, :].uniform_(-INITRANGE, INITRANGE)
         if self.peripheral_emb_dim > 0:
             self.input_aggregator.weight.data.uniform_(-INITRANGE, INITRANGE)
+        if self.nloc is not None:
+            self.nloc_encoder.weight.data.uniform_(-INITRANGE, INITRANGE)
 
     def forward(self, input, hidden, return_h=False):
         # print('Inside DART model forward...')
@@ -172,6 +178,8 @@ class RNNModel(nn.Module):
         masks = input['masks']
         pos = input['pos']
         ner = input['ner']
+        obj_loc = input['obj_positions']
+        subj_loc = input['subj_positions']
         #print('tokens shape: {} | pos: {} | ner: {}'.format(tokens.shape, pos.shape, ner.shape))
         batch_size = tokens.size(0)
 
@@ -187,6 +195,11 @@ class RNNModel(nn.Module):
         if self.npos is not None:
             pos_emb = self.npos_encoder(pos)
             input_types.append(pos_emb)
+        if self.nloc is not None:
+            obj_loc_emb = self.nloc_encoder(obj_loc + constant.MAX_LEN)
+            subj_loc_emb = self.nloc_encoder(subj_loc + constant.MAX_LEN)
+            input_types.append(obj_loc_emb)
+            input_types.append(subj_loc_emb)
         combined_input = torch.cat(input_types, dim=2)
         # print('combined tokens...')
         # Reduce inputs to expected size
